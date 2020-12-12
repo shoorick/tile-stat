@@ -1,0 +1,10 @@
+.env*
+__pycache__
+*.pyc
+*.komodoproject
+.komodotools
+activestate.yaml
+db.sqlite3
+.bash*
+.profile
+.selected_editor
