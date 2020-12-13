@@ -8,3 +8,6 @@ db.sqlite3
 .bash*
 .profile
 .selected_editor
+log
+*.log
+*.log.*
