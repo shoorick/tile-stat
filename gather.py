@@ -30,7 +30,8 @@ def read_file(source):
         match = re.search(r'GET /(.+?)/(\d+)/(\d+)/(\d+)\.\S+', line)
 
         if match:
-            groups = match.groups()[:4]
+            groups = [match.group(1)]
+            groups.extend(int(x) for x in match.groups()[1:4])
             data.append(groups)
 
     return pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
