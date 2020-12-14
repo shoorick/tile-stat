@@ -9,7 +9,10 @@ import sys
 Parse arguments
 """
 def parse_arguments():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='Gather and process data from web server log files')
+    parser.add_argument('-o', '--output',
+                        dest='file',
+                        help='output raw data to file, format are choosing by extension (csv, xls, xlsx, htm, html, json)')
     parser.add_argument('source')
     return parser.parse_args()
 
@@ -26,9 +29,7 @@ def read_file(source):
             groups = match.groups()[:4]
             data.append(groups)
 
-    df = pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
-
-    print(df)
+    return pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
 
 
 if __name__ == '__main__':
@@ -37,10 +38,26 @@ if __name__ == '__main__':
 
     try:
         with open(args.source, 'r') as source:
-            read_file(source)
+            df = read_file(source)
     except IndexError:
-        sys.stderr.write('Usage: %s <source.log>\n' % sys.argv[0])
+        sys.stderr.write('Usage: %s [options] <source.log>\n' % sys.argv[0])
         sys.exit(1)
     except IOError as e:
         sys.stderr.write('Cannot open file: %s\n' % str(e))
         sys.exit(2)
+
+    print(df)
+
+    output = args.file
+    if output:
+        if re.search(r'\.csv$', output, re.I):
+            df.to_csv(output)
+        elif re.search(r'\.html?$', output, re.I):
+            df.to_html(output)
+        elif re.search(r'\.js(on)?$', output, re.I):
+            df.to_json(output)
+        elif re.search(r'\.xlsx?$', output, re.I):
+            df.to_excel(output)
+        else:
+            sys.exit(f'Output file {output} has unknown type. '
+                + 'Only CSV, HTML, and XSLX are available.\n')
