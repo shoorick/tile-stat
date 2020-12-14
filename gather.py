@@ -13,6 +13,9 @@ def parse_arguments():
     parser.add_argument('-o', '--output',
                         dest='file',
                         help='output raw data to file, format are choosing by extension (csv, xls, xlsx, htm, html, json)')
+    parser.add_argument('-c', '--column',
+                        dest='name',
+                        help='process desired column (possible names are style, zoom)')
     parser.add_argument('source')
     return parser.parse_args()
 
@@ -59,5 +62,10 @@ if __name__ == '__main__':
         elif re.search(r'\.xlsx?$', output, re.I):
             df.to_excel(output)
         else:
-            sys.exit(f'Output file {output} has unknown type. '
+            sys.stderr.write(f'Output file {output} has unknown type. '
                 + 'Only CSV, HTML, and XSLX are available.\n')
+
+    column = args.name
+    if column and re.match(r'(style|zoom)$', column):
+        count = df[column].value_counts().sort_index()
+        print(count)
