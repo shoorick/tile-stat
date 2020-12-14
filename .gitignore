@@ -4,6 +4,7 @@ __pycache__
 *.komodoproject
 .komodotools
 activestate.yaml
+*.geany
 db.sqlite3
 .bash*
 .profile
