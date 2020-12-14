@@ -17,16 +17,18 @@ def parse_arguments():
 Read log file and parse its lines
 """
 def read_file(source):
-    data = pd.DataFrame() #columns=['style', 'zoom', 'x', 'y'])
+    data = []
 
     for line in source:
         match = re.search(r'GET /(.+?)/(\d+)/(\d+)/(\d+)\.\S+', line)
 
         if match:
             groups = match.groups()[:4]
-            data = data.append([groups])
+            data.append(groups)
 
-    print(data)
+    df = pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
+
+    print(df)
 
 
 if __name__ == '__main__':
