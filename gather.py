@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
+import pandas as pd
 import re
+import sys
 
 """
 Parse arguments
@@ -15,11 +17,16 @@ def parse_arguments():
 Read log file and parse its lines
 """
 def read_file(source):
+    data = pd.DataFrame() #columns=['style', 'zoom', 'x', 'y'])
+
     for line in source:
         match = re.search(r'GET /(.+?)/(\d+)/(\d+)/(\d+)\.\S+', line)
 
         if match:
-            print(f'Style {match[1]}, zoom {match[2]}, x {match[3]}, y {match[4]}')
+            groups = match.groups()[:4]
+            data = data.append([groups])
+
+    print(data)
 
 
 if __name__ == '__main__':
