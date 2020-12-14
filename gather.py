@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import matplotlib.pyplot as plt
 import pandas as pd
 import re
 import sys
@@ -69,3 +70,5 @@ if __name__ == '__main__':
     if column and re.match(r'(style|zoom)$', column):
         count = df[column].value_counts().sort_index()
         print(count)
+        count.plot.barh()
+        plt.show()
