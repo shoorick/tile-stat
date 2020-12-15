@@ -17,7 +17,7 @@ def parse_arguments():
     parser.add_argument('-c', '--column',
                         dest='name',
                         help='process desired column (possible names are style, zoom)')
-    parser.add_argument('source')
+    parser.add_argument('source', nargs='+', type=argparse.FileType('r'))
     return parser.parse_args()
 
 """
@@ -34,23 +34,29 @@ def read_file(source):
             groups.extend(int(x) for x in match.groups()[1:4])
             data.append(groups)
 
-    return pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
+    return data
 
 
 if __name__ == '__main__':
 
+    data = []
     args = parse_arguments()
 
-    try:
-        with open(args.source, 'r') as source:
-            df = read_file(source)
-    except IndexError:
+    if args.source:
+        for f in args.source:
+            try:
+                data.extend(read_file(f))
+            except IOError as e:
+                sys.stderr.write('Cannot open file: %s\n' % str(e))
+    else:
         sys.stderr.write('Usage: %s [options] <source.log>\n' % sys.argv[0])
         sys.exit(1)
-    except IOError as e:
-        sys.stderr.write('Cannot open file: %s\n' % str(e))
+
+    if not data:
+        sys.stderr.write('No data\n')
         sys.exit(2)
 
+    df = pd.DataFrame(data, columns=['style', 'zoom', 'x', 'y'])
     print(df)
 
     output = args.file
